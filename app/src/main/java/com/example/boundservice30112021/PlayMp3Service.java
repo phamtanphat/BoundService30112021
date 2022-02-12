@@ -50,6 +50,11 @@ public class PlayMp3Service extends Service {
 
     @Override
     public void onDestroy() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
         super.onDestroy();
     }
 
