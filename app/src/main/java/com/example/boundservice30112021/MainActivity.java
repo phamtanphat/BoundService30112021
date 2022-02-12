@@ -7,10 +7,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     Button mBtnStartMp3,mBtnStopMp3;
+    TextView mTvStart,mTvEnd;
+    SeekBar mSkMp3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mBtnStartMp3 = findViewById(R.id.buttonStartMp3);
         mBtnStopMp3 = findViewById(R.id.buttonStopMp3);
+        mTvStart = findViewById(R.id.buttonStartMp3);
+        mTvEnd = findViewById(R.id.textEndTime);
+        mSkMp3 = findViewById(R.id.seekbarMp3);
 
         mBtnStartMp3.setOnClickListener(new View.OnClickListener() {
             @Override
