@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -22,10 +23,17 @@ public class PlayMp3Service extends Service {
     NotificationManager mNotificationManager;
     Notification mNotification;
     MediaPlayer mediaPlayer;
+
+    public class PlayMp3Binder extends Binder{
+        public PlayMp3Service getService(){
+            return PlayMp3Service.this;
+        }
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new PlayMp3Binder();
     }
 
     @Override
@@ -76,6 +84,10 @@ public class PlayMp3Service extends Service {
             mediaPlayer = null;
         }
         super.onDestroy();
+    }
+
+    public MediaPlayer getMediaPlayer(){
+        return mediaPlayer;
     }
 
     @SuppressLint("LaunchActivityFromNotification")
