@@ -24,8 +24,8 @@ public class PlayMp3Service extends Service {
     Notification mNotification;
     MediaPlayer mediaPlayer;
 
-    public class PlayMp3Binder extends Binder{
-        public PlayMp3Service getService(){
+    public class PlayMp3Binder extends Binder {
+        public PlayMp3Service getService() {
             return PlayMp3Service.this;
         }
     }
@@ -40,13 +40,13 @@ public class PlayMp3Service extends Service {
     public void onCreate() {
         super.onCreate();
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mediaPlayer = MediaPlayer.create(this,R.raw.nhac);
+        mediaPlayer = MediaPlayer.create(this, R.raw.nhac);
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mp.start();
-                mNotification = createNotification("Bậc đế vương","Đang phát" , REQUEST_CODE_PAUSE);
-                startForeground(1,mNotification);
+                mNotification = createNotification("Bậc đế vương", "Đang phát", REQUEST_CODE_PAUSE);
+                startForeground(1, mNotification);
             }
         });
     }
@@ -54,22 +54,22 @@ public class PlayMp3Service extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null){
-            int requestCode = intent.getIntExtra("requestCode",-1);
-            if (requestCode >= 0){
-                if (requestCode == REQUEST_CODE_PAUSE){
-                    if (mediaPlayer != null && mediaPlayer.isPlaying()){
+        if (intent != null) {
+            int requestCode = intent.getIntExtra("requestCode", -1);
+            if (requestCode >= 0) {
+                if (requestCode == REQUEST_CODE_PAUSE) {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                         mediaPlayer.pause();
-                        mNotification = createNotification("Bậc đế vương","Tạm dừng",REQUEST_CODE_PLAY);
+                        mNotification = createNotification("Bậc đế vương", "Tạm dừng", REQUEST_CODE_PLAY);
                     }
                 }
-                if (requestCode == REQUEST_CODE_PLAY){
-                    if (mediaPlayer != null){
+                if (requestCode == REQUEST_CODE_PLAY) {
+                    if (mediaPlayer != null) {
                         mediaPlayer.start();
-                        mNotification = createNotification("Bậc đế vương","Đang phát",REQUEST_CODE_PAUSE);
+                        mNotification = createNotification("Bậc đế vương", "Đang phát", REQUEST_CODE_PAUSE);
                     }
                 }
-                mNotificationManager.notify(1,mNotification);
+                mNotificationManager.notify(1, mNotification);
             }
         }
 
@@ -78,7 +78,7 @@ public class PlayMp3Service extends Service {
 
     @Override
     public void onDestroy() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()){
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
@@ -86,37 +86,37 @@ public class PlayMp3Service extends Service {
         super.onDestroy();
     }
 
-    public MediaPlayer getMediaPlayer(){
+    public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
 
     @SuppressLint("LaunchActivityFromNotification")
-    private Notification createNotification(String title , String  message, int requestCode){
-        Intent intentOpenApp = new Intent(this,MainActivity.class);
-        intentOpenApp.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    private Notification createNotification(String title, String message, int requestCode) {
+        Intent intentOpenApp = new Intent(this, MainActivity.class);
+        intentOpenApp.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingOpenApp = PendingIntent.getActivity(this,Integer.MIN_VALUE,intentOpenApp,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingOpenApp = PendingIntent.getActivity(this, Integer.MIN_VALUE, intentOpenApp, PendingIntent.FLAG_IMMUTABLE);
 
-        Intent intentPlay = new Intent(this , PlayMp3Service.class);
-        intentPlay.putExtra("requestCode",REQUEST_CODE_PLAY);
+        Intent intentPlay = new Intent(this, PlayMp3Service.class);
+        intentPlay.putExtra("requestCode", REQUEST_CODE_PLAY);
 
-        PendingIntent pendingIntentPlay = PendingIntent.getService(this,REQUEST_CODE_PLAY,intentPlay,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentPlay = PendingIntent.getService(this, REQUEST_CODE_PLAY, intentPlay, PendingIntent.FLAG_IMMUTABLE);
 
-        Intent intentPause = new Intent(this , PlayMp3Service.class);
-        intentPause.putExtra("requestCode",REQUEST_CODE_PAUSE);
+        Intent intentPause = new Intent(this, PlayMp3Service.class);
+        intentPause.putExtra("requestCode", REQUEST_CODE_PAUSE);
 
-        PendingIntent pendingIntentPause = PendingIntent.getService(this,REQUEST_CODE_PAUSE,intentPause,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentPause = PendingIntent.getService(this, REQUEST_CODE_PAUSE, intentPause, PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this,"My Channel");
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, "My Channel");
         notification.setSmallIcon(R.mipmap.ic_launcher);
         notification.setContentTitle(title);
         notification.setContentText(message);
         notification.setContentIntent(pendingOpenApp);
 
-        if (requestCode == REQUEST_CODE_PLAY){
-            notification.addAction(android.R.drawable.ic_media_play,"Play",pendingIntentPlay);
-        }else{
-            notification.addAction(android.R.drawable.ic_media_pause,"Pause",pendingIntentPause);
+        if (requestCode == REQUEST_CODE_PLAY) {
+            notification.addAction(android.R.drawable.ic_media_play, "Play", pendingIntentPlay);
+        } else {
+            notification.addAction(android.R.drawable.ic_media_pause, "Pause", pendingIntentPause);
         }
         return notification.build();
     }

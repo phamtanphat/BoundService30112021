@@ -2,7 +2,9 @@ package com.example.boundservice30112021;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -48,6 +50,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (isMyServiceRunning(PlayMp3Service.class)) {
+            Intent intent = new Intent(MainActivity.this,PlayMp3Service.class);
+            bindService(intent,connection,BIND_AUTO_CREATE);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isMyServiceRunning(PlayMp3Service.class)) {
+            unbindService(connection);
+        }
+    }
+
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -91,5 +110,15 @@ public class MainActivity extends AppCompatActivity {
             textMinus = String.valueOf(minus);
         }
         return textMinus + ":"+textSeconds;
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
